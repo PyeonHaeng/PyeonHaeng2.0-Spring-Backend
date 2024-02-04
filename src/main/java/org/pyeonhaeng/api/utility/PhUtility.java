@@ -19,19 +19,5 @@ public final class PhUtility {
         return name;
     }
 
-    public static String makeSearchResponseJson(List<EventReturnData> entity){
-        int count = entity.size();
 
-        JSONObject jsonObject = new JSONObject();
-
-        jsonObject.put("count",count);
-
-        if(count == 0){
-            jsonObject.put("message","Can't find any products.");
-        }
-        else{
-            jsonObject.put("products",entity);
-        }
-        return jsonObject.toString();
-    }
 }
