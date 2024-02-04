@@ -9,4 +9,5 @@ import java.util.List;
 public interface EventRepository {
 
     public abstract List<EventReturnData> searchEventbyName(String name, OrderStatus order, Pageable pageable);
+
 }
