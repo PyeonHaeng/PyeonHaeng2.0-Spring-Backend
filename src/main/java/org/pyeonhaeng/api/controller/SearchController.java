@@ -4,6 +4,7 @@ package org.pyeonhaeng.api.controller;
 import lombok.RequiredArgsConstructor;
 import org.pyeonhaeng.api.common.enums.OrderStatus;
 import org.pyeonhaeng.api.entity.EventReturnData;
+import org.pyeonhaeng.api.model.EventResponse;
 import org.pyeonhaeng.api.service.SearchServiceImpl;
 import org.pyeonhaeng.api.utility.PhUtility;
 import org.springframework.http.HttpStatus;
@@ -46,15 +47,12 @@ public class SearchController {
 
         List<EventReturnData> searchData = searchServiceImpl.searchEvent(processedName,order,pageSize,offset);
 
-        String result = PhUtility.makeSearchResponseJson(searchData);
-
-        int responseCount = searchData.size();
-
-        if(responseCount == 0 ){
-            return new ResponseEntity(result, HttpStatus.BAD_REQUEST);
+        if(searchData.isEmpty()){
+            return ResponseEntity.badRequest().body(new EventResponse(0,"Can't find any products.",null));
         }
         else{
-            return new ResponseEntity(result, HttpStatus.OK);
+            return ResponseEntity.ok(new EventResponse(searchData.size(),null,searchData));
+
         }
 
 
