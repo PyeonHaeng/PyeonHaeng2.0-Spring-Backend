@@ -8,13 +8,16 @@ import org.pyeonhaeng.api.common.enums.StoreStatus;
 import org.pyeonhaeng.api.entity.EventReturnData;
 import org.pyeonhaeng.api.model.EventResponse;
 import org.pyeonhaeng.api.service.ProductDetailServiceImpl;
+import org.pyeonhaeng.api.service.ProductsCountServiceImpl;
 import org.pyeonhaeng.api.service.ProductsServiceImpl;
 import org.pyeonhaeng.api.utility.PhUtility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RequestMapping("/v2")
@@ -23,6 +26,7 @@ public class ProductsController {
 
     private final ProductsServiceImpl productsServiceImpl;
     private final ProductDetailServiceImpl productDetailServiceImpl;
+    private final ProductsCountServiceImpl productsCountServiceImpl;
 
     @RequestMapping(value = "products/count",produces = "application/json")
     public ResponseEntity productCount(
@@ -33,10 +37,12 @@ public class ProductsController {
         PromotionStatus promotionStatus = PromotionStatus.fromDisplayName(promotion);
         StoreStatus storeStatus = StoreStatus.fromDisplayName(store);
 
-        if (promotionStatus == PromotionStatus.NONE || promotionStatus == PromotionStatus.ALL){
-            promotion = null;
-        }
+        long count = productsCountServiceImpl.productsCount(storeStatus,promotionStatus);
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("count",count);
+
+        return ResponseEntity.ok().body(response);
 
     }
 
