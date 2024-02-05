@@ -7,13 +7,12 @@ import org.pyeonhaeng.api.common.enums.PromotionStatus;
 import org.pyeonhaeng.api.common.enums.StoreStatus;
 import org.pyeonhaeng.api.entity.EventReturnData;
 import org.pyeonhaeng.api.model.EventResponse;
+import org.pyeonhaeng.api.service.ProductDetailServiceImpl;
 import org.pyeonhaeng.api.service.ProductsServiceImpl;
 import org.pyeonhaeng.api.utility.PhUtility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +22,38 @@ import java.util.List;
 public class ProductsController {
 
     private final ProductsServiceImpl productsServiceImpl;
+    private final ProductDetailServiceImpl productDetailServiceImpl;
+
+    @RequestMapping(value = "products/count",produces = "application/json")
+    public ResponseEntity productCount(
+            @RequestParam(value = "store",required = true)String store,
+            @RequestParam(value = "promotion",required = true)String promotion
+            ) throws Exception{
+
+        PromotionStatus promotionStatus = PromotionStatus.fromDisplayName(promotion);
+        StoreStatus storeStatus = StoreStatus.fromDisplayName(store);
+
+        if (promotionStatus == PromotionStatus.NONE || promotionStatus == PromotionStatus.ALL){
+            promotion = null;
+        }
+
+
+    }
+
+
+    @GetMapping(value = "products/{product_id}",produces = "application/json")
+    public ResponseEntity detailProduct(@PathVariable("product_id") int productId)throws Exception{
+
+        List<EventReturnData> detailData = productDetailServiceImpl.productDetail(productId);
+
+        if(detailData.isEmpty()){
+            return ResponseEntity.badRequest().body(new EventResponse(0,"Can't find any products.",null));
+        }
+        else{
+            return ResponseEntity.ok(new EventResponse(detailData.size(),null,detailData));
+
+        }
+    }
 
 
     @RequestMapping(value = "products",produces = "application/json")
