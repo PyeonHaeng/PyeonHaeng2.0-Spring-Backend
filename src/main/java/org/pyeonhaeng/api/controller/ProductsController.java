@@ -7,9 +7,7 @@ import org.pyeonhaeng.api.common.enums.PromotionStatus;
 import org.pyeonhaeng.api.common.enums.StoreStatus;
 import org.pyeonhaeng.api.entity.EventReturnData;
 import org.pyeonhaeng.api.model.EventResponse;
-import org.pyeonhaeng.api.service.ProductDetailServiceImpl;
-import org.pyeonhaeng.api.service.ProductsCountServiceImpl;
-import org.pyeonhaeng.api.service.ProductsServiceImpl;
+import org.pyeonhaeng.api.service.*;
 import org.pyeonhaeng.api.utility.PhUtility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +25,23 @@ public class ProductsController {
     private final ProductsServiceImpl productsServiceImpl;
     private final ProductDetailServiceImpl productDetailServiceImpl;
     private final ProductsCountServiceImpl productsCountServiceImpl;
+    private final ProductHistoryServiceImpl productHistoryServiceImpl;
+
+
+    @GetMapping(value = "products/{product_id}/price-history")
+    public ResponseEntity productHistory(@PathVariable("product_id") int productId) throws Exception{
+
+        List<EventReturnData> historyData = productHistoryServiceImpl.productHistory(productId);
+
+        if(historyData.isEmpty()){
+            return ResponseEntity.badRequest().body(new EventResponse(0,"Can't find any products.",null));
+        }
+        else{
+            return ResponseEntity.ok(new EventResponse(historyData.size(),null,historyData));
+
+        }
+    }
+
 
     @RequestMapping(value = "products/count",produces = "application/json")
     public ResponseEntity productCount(
